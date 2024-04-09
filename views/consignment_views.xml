@@ -1,93 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
-        <!-- Thêm trường Consignment Location vào view của res.partner -->
-        <record id="view_partner_form_consignment" model="ir.ui.view">
-            <field name="name">res.partner.consignment.form</field>
-            <field name="model">res.partner</field>
-            <field name="inherit_id" ref="base.view_partner_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='category_id']" position="after">
-                    <field name="consignment_location_id"/>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- Thêm nút Consignment Confirm vào view của sale.order -->
-        <record id="view_order_form_consignment" model="ir.ui.view">
-            <field name="name">sale.order.consignment.form</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//header" position="inside">
-                    <button name="action_confirm_consignment" string="Consignment Confirm"
-                            type="object" 
-                            states="draft,sent"
-                            class="oe_highlight"/>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- Thêm nút Cancel vào view của sale.order -->
-        <record id="view_order_form_consignment_cancel" model="ir.ui.view">
-            <field name="name">sale.order.consignment.cancel.form</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//header" position="inside">
-                    <button name="action_cancel_consignment" string="Cancel Consignment" 
-                            type="object" 
-                            states="consignment" 
-                            class="oe_highlight"/>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- Định nghĩa hành động xem lệnh chuyển kho nội bộ kí gửi -->
-        <record id="action_view_consignment_picking" model="ir.actions.act_window">
-            <field name="name">Consignment Pickings</field>
-            <field name="res_model">stock.picking</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[('origin', '=', context.get('active_id')), ('picking_type_id.code', '=', 'internal')]</field>
-            <field name="context">{'default_origin': context.get('active_id'), 'default_picking_type_id': ref('stock.picking_type_internal').id}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create a new consignment picking
-                </p>
-            </field>
-        </record>
-
-        <!-- Thêm nút xem lệnh chuyển kho nội bộ vào view của sale.order -->
-        <record id="view_order_form_consignment_picking" model="ir.ui.view">
-            <field name="name">sale.order.consignment.picking.form</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_view_delivery']" position="after">
-                    <button name="action_view_consignment_picking" type="object" 
-                            string="Consignment Picking" 
-                            class="oe_stat_button" 
-                            icon="fa-truck"
-                            attrs="{'invisible': [('consignment_picking_count', '=', 0)]}">
-                        <field string="Consignment Picking" name="consignment_picking_count" widget="statinfo"/>
-                    </button>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- Thêm nút Consignment_Sale vào view của sale.order -->
-    <record id="view_order_form_custom" model="ir.ui.view">
-        <field name="name">sale.order.form.custom</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <!-- Thêm nút 'Sales Consignment' -->
-                <button name="action_consignment_sale" string="Sales Consignment"
-                        type="object"
-                        class="oe_highlight"
-                        attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
-            </xpath>
-        </field>
+  <data>
+    <record id="view_partner_form_consignment" model="ir.ui.view">
+      <field name="name">res.partner.consignment.form</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='category_id']" position="after">
+          <field name="consignment_location_id"/>
+        </xpath>
+      </field>
     </record>
-    </data>
+
+    <record id="view_order_form_consignment" model="ir.ui.view">
+      <field name="name">sale.order.consignment.form</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//header" position="inside">
+          <button name="action_confirm_consignment" string="Consignment Confirm"
+                  type="object"
+                  states="draft,sent"
+                  class="oe_highlight"/>
+        </xpath>
+      </field>
+    </record>
+
+    <record id="view_order_form_consignment_cancel" model="ir.ui.view">
+      <field name="name">sale.order.consignment.cancel.form</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//header" position="inside">
+          <button name="action_cancel_consignment" string="Cancel Consignment"
+                  type="object"
+                  states="consignment"
+                  class="oe_highlight"/>
+        </xpath>
+      </field>
+    </record>
+
+    <record id="action_view_consignment_picking" model="ir.actions.act_window">
+      <field name="name">Consignment Pickings</field>
+      <field name="res_model">stock.picking</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('origin', '=', context.get('active_id')), ('picking_type_id.code', '=', 'internal')]</field>
+      <field name="context">{'default_origin': context.get('active_id'), 'default_picking_type_id': ref('stock.picking_type_internal').id}</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Create a new consignment picking
+        </p>
+      </field>
+    </record>
+
+    <record id="view_order_form_consignment_picking" model="ir.ui.view">
+      <field name="name">sale.order.consignment.picking.form</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//button[@name='action_view_delivery']" position="after">
+          <button name="action_view_consignment_picking" type="object"
+                  string="Consignment Picking"
+                  class="oe_stat_button"
+                  icon="fa-truck"
+                  attrs="{'invisible': [('consignment_picking_count', '=', 0)]}">
+            <field string="Consignment Picking" name="consignment_picking_count" widget="statinfo"/>
+          </button>
+        </xpath>
+      </field>
+    </record>
+    <record id="view_order_form_custom" model="ir.ui.view">
+      <field name="name">sale.order.form.custom</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//header" position="inside">
+          <button name="action_consignment_sale" string="Sales Consignment"
+                  type="object"
+                  class="oe_highlight"
+                  attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
+        </xpath>
+      </field>
+    </record>
+  </data>
 </odoo>
