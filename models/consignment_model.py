@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 class ResPartner(models.Model):
@@ -21,7 +20,6 @@ class StockPicking(models.Model):
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
-
     state = fields.Selection(
         selection_add=[('consignment', 'Consignment Order')],
         track_visibility='onchange',
@@ -31,14 +29,6 @@ class SaleOrder(models.Model):
         compute='_compute_consignment_picking_count',
         string='Consignment Pickings Count',
     )
-
-
-from odoo import models, api
-from odoo.exceptions import UserError
-
-class SaleOrder(models.Model):
-    _inherit = 'sale.order'
-
     def action_consignment_sale(self):
         self.ensure_one()  # Đảm bảo chỉ xử lý một đơn hàng
         if not self.partner_id.consignment_location_id:
@@ -71,7 +61,7 @@ class SaleOrder(models.Model):
         picking_type = self.env['stock.picking.type'].search([('code', '=', 'internal')], limit=1)
         if not picking_type:
             raise UserError(_("Chưa thiết lập loại hình chuyển kho hoặc xuất kho"))
-        
+    
         consignment_location = self.partner_id.consignment_location_id
         if not consignment_location:
             raise UserError(_("Vui lòng cấu hình kho ký gửi cho đối tác này."))
