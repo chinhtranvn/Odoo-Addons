@@ -6,7 +6,7 @@
     'sequence': 10,
     'description': """Manage consignment processes in Odoo""",
     'category': 'Sales',
-    'website': 'https://www.yourcompany.com',
+    'website': 'https://github.com/chinhtranvn/Odoo-addons/tree/16.0/consignment_manager',
     'depends': ['base', 'sale', 'stock'],
     'data': [
         'views/consignment_views.xml',
