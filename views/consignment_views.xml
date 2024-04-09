@@ -21,7 +21,7 @@
           <button name="action_confirm_consignment" string="Consignment Confirm"
                   type="object"
                   states="draft,sent"
-                  class="oe_highlight"/>
+                  class="oe_secondary"/>
         </xpath>
       </field>
     </record>
@@ -35,7 +35,7 @@
           <button name="action_cancel_consignment" string="Cancel Consignment"
                   type="object"
                   states="consignment"
-                  class="oe_highlight"/>
+                  class="oe_secondary"/>
         </xpath>
       </field>
     </record>
@@ -77,7 +77,7 @@
         <xpath expr="//header" position="inside">
           <button name="action_consignment_sale" string="Sales Consignment"
                   type="object"
-                  class="oe_highlight"
+                  class="oe_secondary"
                   attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
         </xpath>
       </field>
