@@ -16,7 +16,7 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     def _onchange_location_id(self):
-        for move in self.move_lines:
+        for move in self.move_line_ids:
             move.location_id = self.location_id
         return {}
 
@@ -44,7 +44,7 @@ class SaleOrder(models.Model):
 
         for picking in new_pickings:
             picking.location_id = self.partner_id.consignment_location_id.id
-            for move_line in picking.move_lines.mapped('move_line_ids'):
+            for move_line in picking.move_ids.mapped('move_line_ids'):
                 move_line.location_id = self.partner_id.consignment_location_id.id
 
         return res
@@ -71,12 +71,13 @@ class SaleOrder(models.Model):
             'location_dest_id': consignment_location.id,
             'scheduled_date': fields.Datetime.now(),
             'origin': self.name,
-            'move_lines': [
+            'move_line_ids': [
                 (0, 0, {
-                    'name': line.product_id.name,
+                    'display_name': line.product_id.name,
                     'product_id': line.product_id.id,
-                    'product_uom_qty': line.product_uom_qty,
-                    'product_uom': line.product_uom.id,
+                    'qty_done':line.product_uom_qty,
+                    #'reserved_uom_qty': line.product_uom_qty,
+                    #'product_uom_id': line.product_uom.id,
                     'location_id': self.warehouse_id.lot_stock_id.id,
                     'location_dest_id': consignment_location.id,
                 }) for line in self.order_line if line.product_id.type != 'service'
