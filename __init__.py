@@ -8,5 +8,3 @@ def post_init_hook(cr, registry):
     consignment_orders = sale_order_obj.search([('state', '=', False)])
     if consignment_orders:
         consignment_orders.write({'state': 'consignment'})
-
-# Đảm bảo các hàm khác trong __init__.py vẫn được giữ nguyên

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 class ResPartner(models.Model):
@@ -15,16 +15,16 @@ class ResPartner(models.Model):
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    def onchange_location_id(self):
+    def _onchange_location_id(self):
         for move in self.move_lines:
-            move.write({'location_id': self.location_id})
+            move.location_id = self.location_id
+        return {}
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
-
     state = fields.Selection(
         selection_add=[('consignment', 'Consignment Order')],
-        track_visibility='onchange',
+        tracking=True,  # 'track_visibility' is deprecated in Odoo 16, replaced by 'tracking'
     )
 
     consignment_picking_count = fields.Integer(
@@ -32,38 +32,26 @@ class SaleOrder(models.Model):
         string='Consignment Pickings Count',
     )
 
-
-from odoo import models, api
-from odoo.exceptions import UserError
-
-class SaleOrder(models.Model):
-    _inherit = 'sale.order'
-
     def action_consignment_sale(self):
-        self.ensure_one()  # Đảm bảo chỉ xử lý một đơn hàng
+        self.ensure_one()
         if not self.partner_id.consignment_location_id:
             raise UserError(_('Địa điểm ký gửi không được thiết lập cho đối tác này.'))
 
-        # Ghi nhận các phiếu xuất kho hiện có
         existing_picking_ids = set(self.picking_ids.ids)
-
-        # Thực hiện quy trình xác nhận đơn hàng mặc định
         res = super(SaleOrder, self).action_confirm()
-
-        # Xác định các phiếu xuất kho mới được tạo
         new_picking_ids = set(self.picking_ids.ids) - existing_picking_ids
         new_pickings = self.env['stock.picking'].browse(new_picking_ids)
 
         for picking in new_pickings:
-            picking.write({'location_id': self.partner_id.consignment_location_id.id})
+            picking.location_id = self.partner_id.consignment_location_id.id
             for move_line in picking.move_lines.mapped('move_line_ids'):
-                move_line.write({'location_id': self.partner_id.consignment_location_id.id})
+                move_line.location_id = self.partner_id.consignment_location_id.id
 
         return res
 
     def action_confirm_consignment(self):
         self.ensure_one()
-        self.write({'state': 'consignment'})
+        self.state = 'consignment'
         self._create_consignment_stock_picking()
 
     def _create_consignment_stock_picking(self):
@@ -71,7 +59,7 @@ class SaleOrder(models.Model):
         picking_type = self.env['stock.picking.type'].search([('code', '=', 'internal')], limit=1)
         if not picking_type:
             raise UserError(_("Chưa thiết lập loại hình chuyển kho hoặc xuất kho"))
-        
+    
         consignment_location = self.partner_id.consignment_location_id
         if not consignment_location:
             raise UserError(_("Vui lòng cấu hình kho ký gửi cho đối tác này."))
@@ -118,4 +106,4 @@ class SaleOrder(models.Model):
 
     def action_cancel_consignment(self):
         self.ensure_one()
-        self.write({'state': 'cancel'})
+        self.state = 'cancel'
